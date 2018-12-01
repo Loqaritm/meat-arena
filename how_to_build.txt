@@ -1,0 +1,1 @@
+g++ -o out -I ./Client Client/*.cpp -lSDL2
