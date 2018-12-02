@@ -89,6 +89,6 @@ void AnimatedSprite::animationDone(std::string currentAnimation){
 void AnimatedSprite::setupAnimations(){
     this->addAnimation(3,0,0,"RunLeft",16,16,Vector2(0,0));
     this->addAnimation(3,0,0,"RunRight",16,16,Vector2(0,0),true);
-    this->addAnimation(1,1,0,"StandLookingLeft",16,16,Vector2(0,0));
-    this->addAnimation(1,1,0,"StandLookingRight",16,16,Vector2(0,0), true);
+    this->addAnimation(1,2,0,"StandLookingLeft",16,16,Vector2(0,0));
+    this->addAnimation(1,2,0,"StandLookingRight",16,16,Vector2(0,0), true);
 }
