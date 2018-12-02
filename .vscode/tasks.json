@@ -8,7 +8,7 @@
             "type":"shell",
             "command":"g++",
             "args": [
-                "-o", "client.exe", "-I", "./Client/headers", "Client/source/*.cpp", "-lSDL2"
+                "-o", "client.exe", "-I", "./Client/headers", "Client/source/*.cpp", "-lSDL2", "-lSDL2_image"
             ],
             "group": {
                 "kind":"build",
