@@ -20,12 +20,20 @@ public:
     void moveRight();
     // stops moving the player and plays idle
     void stopMoving();
+    // makes the player jump
+    void jump();
+    // computes when player is jumping
+    void jumping();
+    // makes the player fall down
+    void falling();
 
     virtual void animationDone(std::string currentAnimation);
     virtual void setupAnimations();
 private:
     float _dx, _dy;
-
+    float _jumping_height_now;
+    bool _readyToJump;
+    bool _jumping;
     Direction _facing;
 };
 

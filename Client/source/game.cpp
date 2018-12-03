@@ -25,8 +25,9 @@ void Game::gameLoop(){
     Input input;
     SDL_Event event;
 
-    this->_player = Player(graphics, "Client/Content/Sprites/MyChar.png", 0, 0, 16, 16, 100, 100);
-    this->_player.playAnimation("RunLeft");
+    // this->_player = Player(graphics, "Client/Content/Sprites/MyChar.png", 0, 0, 16, 16, 100, 100);
+    this->_player = Player(graphics, "Client/Content/Sprites/meat.png", 0, 0, 16, 16, 100, 100);
+    this->_player.playAnimation("IdleRight");
 
 
     int LAST_UPDATE_TIME=SDL_GetTicks();
@@ -61,6 +62,10 @@ void Game::gameLoop(){
                 this->_player.moveRight();
             }
         }
+        if (input.wasKeyPressed(SDL_SCANCODE_UP)){
+            this->_player.jump();
+        }
+
         if(input.wasKeyReleased(SDL_SCANCODE_LEFT)){
             this->_player.stopMoving();
         }
