@@ -2,15 +2,13 @@
 #include <game.h>
 #include <graphics.h>
 #include <input.h>
+#include <globals.h>
 /** Game class
  *  Main game loop
  * 
  */
 
-namespace{
-    const int FPS = 60;
-    const int MAX_FRAME_TIME = 1000/60;
-}
+
 
 
 Game::Game(){
@@ -27,8 +25,7 @@ void Game::gameLoop(){
     Input input;
     SDL_Event event;
 
-    this->_player = AnimatedSprite(graphics,"Client/Content/Sprites/MyChar.png",0, 0, 16, 16, 100, 100, MAX_FRAME_TIME*10);
-    this->_player.setupAnimations();
+    this->_player = Player(graphics, "Client/Content/Sprites/MyChar.png", 0, 0, 16, 16, 100, 100);
     this->_player.playAnimation("RunLeft");
 
 
@@ -58,22 +55,22 @@ void Game::gameLoop(){
         }
         if (! (input.isKeyHeld(SDL_SCANCODE_LEFT) & input.isKeyHeld(SDL_SCANCODE_RIGHT))){
             if(input.isKeyHeld(SDL_SCANCODE_LEFT)){
-                this->_player.playAnimation("RunLeft");
+                this->_player.moveLeft();
             }
             if(input.isKeyHeld(SDL_SCANCODE_RIGHT)){
-                this->_player.playAnimation("RunRight");
+                this->_player.moveRight();
             }
         }
         if(input.wasKeyReleased(SDL_SCANCODE_LEFT)){
-            this->_player.playAnimation("StandLookingLeft");
+            this->_player.stopMoving();
         }
         if(input.wasKeyReleased(SDL_SCANCODE_RIGHT)){
-            this->_player.playAnimation("StandLookingRight");
+            this->_player.stopMoving();
         }
 
         const int CURRENT_TIME = SDL_GetTicks();
         int ELAPSED_TIME = CURRENT_TIME - LAST_UPDATE_TIME;
-        this->update(std::min(ELAPSED_TIME, MAX_FRAME_TIME));
+        this->update(std::min(ELAPSED_TIME, globals::MAX_FRAME_TIME));
         LAST_UPDATE_TIME = CURRENT_TIME;
 
         this->draw(graphics);
@@ -83,11 +80,11 @@ void Game::gameLoop(){
 
 void Game::draw(Graphics &graphics){
     graphics.clear();
-    this->_player.draw(graphics, 100, 100);
+    this->_player.draw(graphics);
     graphics.flip();
 }
 
 void Game::update(float elapsedTime){
     _player.update(elapsedTime);
-    SDL_Delay(MAX_FRAME_TIME - elapsedTime);
+    SDL_Delay(globals::MAX_FRAME_TIME - elapsedTime);
 }
