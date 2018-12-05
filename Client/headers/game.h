@@ -2,6 +2,8 @@
 #define GAME_H
 
 #include <player.h>
+#include <hud.h>
+#include <level.h>
 
 class Graphics;
 
@@ -15,6 +17,8 @@ private:
     void update(float elapsedTime);
 
     Player _player;
+    Hud _hud;
+    Level _level;
 };
 
 #endif

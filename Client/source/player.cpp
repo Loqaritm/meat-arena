@@ -4,7 +4,8 @@
 
 namespace player_constants {
     const float WALK_SPEED = 0.2f;
-    const float JUMP_SPEED = 0.2f;
+    const float JUMP_SPEED = 0.75f;
+    const float ACCELERATION = 0.015f;
     const float MAX_JUMP_HEIGHT = 5.0f * globals::SPRITE_SCALE;
 }
 
@@ -13,8 +14,8 @@ Player::Player(){}
 Player::Player(Graphics &graphics, const std::string &filepath, int sourceX, int sourceY, int width, int height,
             float posX, float posY) :
     AnimatedSprite(graphics, filepath, 0,0,16,16, posX,posY, globals::MAX_FRAME_TIME*10),
-    _readyToJump(true),
-    _jumping(false),
+    _readyToJump(false),
+    _jumping(true),
     _jumping_height_now(0.0f)
     {
         graphics.loadImage(filepath);
@@ -38,8 +39,10 @@ void Player::setupAnimations(){
     
     this->addAnimation(1,0,16,"JumpLeft",16,16,Vector2(0,0));
     this->addAnimation(1,0,16,"JumpRight",16,16,Vector2(0,0), true);
-    this->addAnimation(1,1,16,"FallLeft",16,16,Vector2(0,0));
-    this->addAnimation(1,1,16,"FallRight",16,16,Vector2(0,0), true);
+    this->addAnimation(1,1,16,"JumpLeftApex",16,16,Vector2(0,0));
+    this->addAnimation(1,1,16,"JumpRightApex",16,16,Vector2(0,0), true);
+    this->addAnimation(1,2,16,"FallLeft",16,16,Vector2(0,0));
+    this->addAnimation(1,2,16,"FallRight",16,16,Vector2(0,0), true);
 
 }
 
@@ -66,42 +69,74 @@ void Player::stopMoving(){
 }
 
 void Player::jump(){
-    if (this->_readyToJump) {this->_jumping=true; this->_readyToJump=false;}
-}
-
-void Player::jumping(){
-    if (this->_jumping_height_now < player_constants::MAX_JUMP_HEIGHT){
-        this->_dy = -player_constants::JUMP_SPEED;
-        this->_jumping_height_now += player_constants::JUMP_SPEED;
-        this->_facing==LEFT ? this->playAnimation("JumpLeft") : this->playAnimation("JumpRight");
-    }
-    else{
-        this->_jumping = false;
-        this->_dy = 0.0f;
+    if (this->_readyToJump) {
+        this->_jumping=true;
+        this->_readyToJump=false;
+        this->_velocityY=player_constants::JUMP_SPEED;
+        this->_y-=this->_velocityY;
     }
 }
 
-void Player::falling(){
-    if (this->_jumping_height_now > 0.0f){
-        this->_dy = player_constants::JUMP_SPEED;
-        this->_jumping_height_now -= player_constants::JUMP_SPEED;
-        this->_facing==LEFT ? this->playAnimation("FallLeft") : this->playAnimation("FallRight");
+// void Player::jumping(){
+//     if (this->_jumping_height_now < player_constants::MAX_JUMP_HEIGHT){
+//         if (this->_jumping_height_now < 3.0f/4.0f * player_constants::MAX_JUMP_HEIGHT){
+//             this->_dy = -player_constants::JUMP_SPEED;
+//             this->_jumping_height_now += player_constants::JUMP_SPEED;
+//             this->_facing==LEFT ? this->playAnimation("JumpLeft") : this->playAnimation("JumpRight");
+//         }
+//         else{
+//             this->_dy = -player_constants::JUMP_SPEED/2.0f;
+//             this->_jumping_height_now += player_constants::JUMP_SPEED/2.0f;
+//             this->_facing==LEFT ? this->playAnimation("JumpLeftApex") : this->playAnimation("JumpRightApex");
+//         }
+//     }
+//     else{
+//         this->_jumping = false;
+//         this->_dy = 0.0f;
+//     }
+// }
+
+void Player::jumpingAndFalling(){
+    if (this->_y < 300.0f){
+        this->_dy = -this->_velocityY;
+        this->_velocityY -= player_constants::ACCELERATION;
+        if (this->_velocityY < 1.0f/4.0f * player_constants::JUMP_SPEED && this->_velocityY > -1.0f/4.0f * player_constants::JUMP_SPEED) 
+            this->_facing==LEFT ? this->playAnimation("JumpLeftApex") : this->playAnimation("JumpRightApex");
+        else if (this->_velocityY > 0.0f) 
+            this->_facing==LEFT ? this->playAnimation("JumpLeft") : this->playAnimation("JumpRight");
+        else 
+            this->_facing==LEFT ? this->playAnimation("FallLeft") : this->playAnimation("FallRight");
     }
     else{
-        if (!_readyToJump) this->_facing==LEFT ? this->playAnimation("IdleLeft") : this->playAnimation("IdleRight"); 
-        this->_readyToJump = true;
-        this->_dy = 0.0f;
+        this->_y = 300.0f;
+        this->_dy=0.0f;
+        this->_readyToJump=true;
+        this->_jumping=false;
     }
 }
+
+// void Player::falling(){
+//     if (this->_jumping_height_now > 0.0f){
+//         this->_dy = player_constants::JUMP_SPEED;
+//         this->_jumping_height_now -= player_constants::JUMP_SPEED;
+//         this->_facing==LEFT ? this->playAnimation("FallLeft") : this->playAnimation("FallRight");
+//     }
+//     else{
+//         if (!_readyToJump) this->_facing==LEFT ? this->playAnimation("IdleLeft") : this->playAnimation("IdleRight"); 
+//         this->_readyToJump = true;
+//         this->_dy = 0.0f;
+//     }
+// }
 
 void Player::update(float elapsedTime){
     //move by _dx
-    if (this->_jumping){
-        this->jumping();
-    }
-    else{
-        this->falling();
-    }
+    // if (this->_jumping){
+    //     this->jumping();
+    // }
+    // else{
+    //     this->falling();
+    // }
+    this->jumpingAndFalling();
 
     this->_x+=this->_dx * elapsedTime;
     this->_y+=this->_dy * elapsedTime;

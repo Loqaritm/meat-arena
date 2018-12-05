@@ -14,6 +14,9 @@ public:
     virtual ~Sprite();
     virtual void update();
     void draw(Graphics &graphics, int x, int y);
+
+    float get_x();
+    float get_y();
 protected:
     SDL_Rect _sourceRect;
     SDL_Texture* _spriteSheet;

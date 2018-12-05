@@ -24,13 +24,17 @@ public:
     void jump();
     // computes when player is jumping
     void jumping();
+    
+    // a function that calculates both the jumps and the falls
+    void jumpingAndFalling();
+
     // makes the player fall down
     void falling();
 
     virtual void animationDone(std::string currentAnimation);
     virtual void setupAnimations();
 private:
-    float _dx, _dy;
+    float _dx, _dy, _velocityY;
     float _jumping_height_now;
     bool _readyToJump;
     bool _jumping;
