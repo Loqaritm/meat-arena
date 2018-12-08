@@ -10,6 +10,24 @@ namespace globals{
     const int FPS = 60;
     const int MAX_FRAME_TIME = 1000/60;
 }
+namespace sides{
+    enum Side {
+        TOP,
+        BOTTOM,
+        LEFT,
+        RIGHT,
+        NONE
+    };
+
+    const inline Side getOppositeSide(Side side) {
+        return
+            side == TOP ? BOTTOM :
+            side == BOTTOM ? TOP :
+            side == LEFT ? RIGHT :
+            side == RIGHT ? LEFT :
+            NONE;
+    }
+}
 
 enum Direction {
     LEFT,

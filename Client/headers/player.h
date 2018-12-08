@@ -33,6 +33,9 @@ public:
 
     virtual void animationDone(std::string currentAnimation);
     virtual void setupAnimations();
+
+    void handleTileCollisions(std::vector<Rectangle> &others);
+
 private:
     float _dx, _dy, _velocityY;
     float _jumping_height_now;

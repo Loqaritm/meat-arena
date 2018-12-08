@@ -5,7 +5,7 @@
 namespace player_constants {
     const float WALK_SPEED = 0.2f;
     const float JUMP_SPEED = 0.75f;
-    const float ACCELERATION = 0.015f;
+    const float ACCELERATION = 0.002f;
     const float MAX_JUMP_HEIGHT = 5.0f * globals::SPRITE_SCALE;
 }
 
@@ -68,12 +68,43 @@ void Player::stopMoving(){
     if(this->_facing==RIGHT) this->playAnimation("IdleRight");
 }
 
+void Player::handleTileCollisions(std::vector<Rectangle> &others){
+    for (int i=0; i<others.size(); i++){
+        sides::Side collisionSide = this->getCollisionSide(others.at(i));
+        if(collisionSide != sides::NONE){
+            switch(collisionSide){
+            case sides::TOP:
+                this->_y = others.at(i).getBottom() + 1;
+                this->_dy = 0;
+                this->_velocityY = 0.0f;
+                break;
+            case sides::BOTTOM:
+                this->_y = others.at(i).getTop() - 1 - this->_boundingBox.getHeight();
+                this->_dy = 0;
+                this->_jumping = false;
+                this->_readyToJump = true;
+                this->_velocityY = 0.0f;
+                break;
+            case sides::LEFT:
+                this->_x = others.at(i).getRight() + 1;
+                this->_dx = 0;
+                break;
+            case sides::RIGHT:
+                this->_x = others.at(i).getLeft() - 1 - this->_boundingBox.getWidth();
+                this->_dx = 0;
+                break;
+            }
+        }
+    }
+}
+
+
 void Player::jump(){
     if (this->_readyToJump) {
-        this->_jumping=true;
-        this->_readyToJump=false;
-        this->_velocityY=player_constants::JUMP_SPEED;
-        this->_y-=this->_velocityY;
+        this->_jumping = true;
+        this->_readyToJump = false;
+        this->_velocityY = player_constants::JUMP_SPEED;
+        this->_y -= this->_velocityY;
     }
 }
 
@@ -97,22 +128,15 @@ void Player::jump(){
 // }
 
 void Player::jumpingAndFalling(){
-    if (this->_y < 300.0f){
-        this->_dy = -this->_velocityY;
-        this->_velocityY -= player_constants::ACCELERATION;
-        if (this->_velocityY < 1.0f/4.0f * player_constants::JUMP_SPEED && this->_velocityY > -1.0f/4.0f * player_constants::JUMP_SPEED) 
-            this->_facing==LEFT ? this->playAnimation("JumpLeftApex") : this->playAnimation("JumpRightApex");
-        else if (this->_velocityY > 0.0f) 
-            this->_facing==LEFT ? this->playAnimation("JumpLeft") : this->playAnimation("JumpRight");
-        else 
-            this->_facing==LEFT ? this->playAnimation("FallLeft") : this->playAnimation("FallRight");
-    }
-    else{
-        this->_y = 300.0f;
-        this->_dy=0.0f;
-        this->_readyToJump=true;
-        this->_jumping=false;
-    }
+    this->_dy = -this->_velocityY;
+    // this->_velocityY -= player_constants::ACCELERATION;
+    if (this->_velocityY < 1.0f/4.0f * player_constants::JUMP_SPEED && this->_velocityY > -1.0f/4.0f * player_constants::JUMP_SPEED) 
+        this->_facing==LEFT ? this->playAnimation("JumpLeftApex") : this->playAnimation("JumpRightApex");
+    else if (this->_velocityY > 0.0f) 
+        this->_facing==LEFT ? this->playAnimation("JumpLeft") : this->playAnimation("JumpRight");
+    else 
+        this->_facing==LEFT ? this->playAnimation("FallLeft") : this->playAnimation("FallRight");
+
 }
 
 // void Player::falling(){
@@ -140,6 +164,8 @@ void Player::update(float elapsedTime){
 
     this->_x+=this->_dx * elapsedTime;
     this->_y+=this->_dy * elapsedTime;
+    // velocity calculation needs to be here to work properly in low framerates
+    this->_velocityY -= player_constants::ACCELERATION * elapsedTime;
     AnimatedSprite::update(elapsedTime);
 }
 

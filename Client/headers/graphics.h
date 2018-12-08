@@ -22,6 +22,8 @@ class Graphics {
         void clear();
 
         SDL_Renderer* getRenderer() const;
+
+        void getWindowSize(int &width, int &height);
     private:
         SDL_Window* _window;
         SDL_Renderer* _renderer;

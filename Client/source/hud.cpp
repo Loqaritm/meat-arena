@@ -23,3 +23,14 @@ void Hud::draw(Graphics &graphics, float x, float y){
     SDL_RenderCopy(graphics.getRenderer(), Message, NULL, &this->_sourceRect);
     SDL_DestroyTexture(Message);
 }
+
+void Hud::draw(Graphics &graphics, std::string currentAnimationName){
+    std::string text = "Current animation: " + currentAnimationName;
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(this->sans, text.c_str(), this->color);
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(graphics.getRenderer(), surfaceMessage);
+    this->_sourceRect.w=surfaceMessage->w;
+    this->_sourceRect.h=surfaceMessage->h;
+    SDL_FreeSurface(surfaceMessage);
+    SDL_RenderCopy(graphics.getRenderer(), Message, NULL, &this->_sourceRect);
+    SDL_DestroyTexture(Message);
+}

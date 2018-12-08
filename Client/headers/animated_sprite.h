@@ -21,6 +21,8 @@ public:
 
     void draw(Graphics &graphics, int x, int y);
 
+    std::string getCurrentAnimation();
+
 protected:
     bool _currentAnimationOnce;
     double _timeToUpdate;

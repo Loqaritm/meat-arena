@@ -13,6 +13,17 @@ Graphics::Graphics(){
 
 Graphics::~Graphics(){
     SDL_DestroyWindow(this->_window);
+    SDL_DestroyRenderer(this->_renderer);
+}
+
+// void Graphics::maximizeWindow(){
+//     SDL_MaximizeWindow(this->_window);
+// }
+
+
+//probably wont work
+void Graphics::getWindowSize(int &width, int &height){
+    SDL_GetWindowSize(this->_window, &width, &height);
 }
 
 SDL_Surface* Graphics::loadImage(const std::string &filepath){

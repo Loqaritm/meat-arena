@@ -81,3 +81,7 @@ void AnimatedSprite::draw(Graphics &graphics, int x, int y){
         graphics.blitSurface(this->_spriteSheet,&tempSourceRect, &destinationRectangle, this->_isAnimationMirrored[this->_currentAnimation]);
     }
 }
+
+std::string AnimatedSprite::getCurrentAnimation(){
+    return this->_currentAnimation;
+}

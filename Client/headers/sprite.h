@@ -2,7 +2,9 @@
 #define SPRITE_H
 
 #include <string>
+#include <rectangle.h>
 #include "SDL2/SDL_image.h"
+#include <globals.h>
 
 class Graphics;
 
@@ -17,10 +19,14 @@ public:
 
     float get_x();
     float get_y();
+
+    const Rectangle getBoundingBox() const;
+    const sides::Side getCollisionSide(Rectangle &other) const;
 protected:
     SDL_Rect _sourceRect;
     SDL_Texture* _spriteSheet;
     float _x, _y;
+    Rectangle _boundingBox;
 private:
 };
 

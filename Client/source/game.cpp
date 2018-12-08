@@ -26,12 +26,19 @@ void Game::gameLoop(){
     Input input;
     SDL_Event event;
 
+
+    // just a test to show that you cen get screen size TODO: using it to scale the graphics
+    int width, height;
+    graphics.getWindowSize(width, height);
+    printf(std::to_string(width).c_str());
+    printf(std::to_string(height).c_str());
+
     // this->_player = Player(graphics, "Client/Content/Sprites/MyChar.png", 0, 0, 16, 16, 100, 100);
     this->_player = Player(graphics, "Client/Content/Sprites/meat.png", 0, 0, 16, 16, 100, 100);
     this->_player.playAnimation("IdleRight");
 
     this->_hud = Hud();
-    this->_level = Level("mapName1", Vector2(100,100), graphics);
+    this->_level = Level("map1", Vector2(100,100), graphics);
 
     int LAST_UPDATE_TIME=SDL_GetTicks();
 
@@ -90,13 +97,19 @@ void Game::draw(Graphics &graphics){
     graphics.clear();
     this->_level.draw(graphics);
     this->_player.draw(graphics);
-    this->_hud.draw(graphics, this->_player.get_x(), this->_player.get_y());
+    // this->_hud.draw(graphics, this->_player.get_x(), this->_player.get_y());
+    this->_hud.draw(graphics, _player.getCurrentAnimation());
     graphics.flip();
-    // SDL_RenderPresent(graphics.getRenderer());
 }
 
 void Game::update(float elapsedTime){
     _player.update(elapsedTime);
     _level.update(elapsedTime);
+
+    std::vector<Rectangle> otherRectangles;
+    otherRectangles = this->_level.checkTileCollisions(this->_player.getBoundingBox());
+    if (otherRectangles.size() > 0){
+        this->_player.handleTileCollisions(otherRectangles);
+    }
     SDL_Delay(globals::MAX_FRAME_TIME - elapsedTime);
 }
