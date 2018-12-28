@@ -35,6 +35,7 @@ public:
     virtual void setupAnimations();
 
     void handleTileCollisions(std::vector<Rectangle> &others);
+    void handlePlayerCollisions(Rectangle &other);
 
 private:
     float _dx, _dy, _velocityY;

@@ -6,11 +6,12 @@
 class Rectangle{
 public:
     Rectangle() {}
-    Rectangle(int x, int y, int width, int height) :
+    Rectangle(int x, int y, int width, int height, bool isPlayer = false) :
         _x(x),
         _y(y),
         _width(width),
-        _height(height)
+        _height(height),
+        _isPlayer(isPlayer)
         {}
 
     const int getCenterX() const {
@@ -60,6 +61,7 @@ public:
 
 private:
     int _x, _y, _width, _height;
+    bool _isPlayer;
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include <vector>
 #include <tile.h>
 #include <rectangle.h>
+#include <player.h>
 
 class Graphics;
 struct SDL_Texture;
@@ -20,6 +21,7 @@ public:
     void draw(Graphics &graphics);
 
     std::vector<Rectangle> checkTileCollisions(const Rectangle &other);
+
 
 private:
 std::string _mapName;

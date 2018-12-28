@@ -1,1 +1,1 @@
-g++ -o out -I ./Client Client/*.cpp -lSDL2 -lSDL2_image
+g++ -o out -I ./Client Client/*.cpp -lSDL2 -lSDL2_image -lSDL2_ttf

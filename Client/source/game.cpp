@@ -33,9 +33,16 @@ void Game::gameLoop(){
     printf(std::to_string(width).c_str());
     printf(std::to_string(height).c_str());
 
-    // this->_player = Player(graphics, "Client/Content/Sprites/MyChar.png", 0, 0, 16, 16, 100, 100);
-    this->_player = Player(graphics, "Client/Content/Sprites/meat.png", 0, 0, 16, 16, 100, 100);
-    this->_player.playAnimation("IdleRight");
+    // this->_player1 = Player(graphics, "Client/Content/Sprites/MyChar.png", 0, 0, 16, 16, 100, 100);
+    this->_player1 = Player(graphics, "Client/Content/Sprites/meat.png", 0, 0, 16, 16, 100, 100);
+    this->_player2 = Player(graphics, "Client/Content/Sprites/triangle.png", 0, 0, 16, 16, 200, 100);
+    this->_player1.playAnimation("IdleRight");
+    this->_player2.playAnimation("IdleRight");
+
+    //initialising vector of players
+    // this->_players.clear();
+    this->_players.push_back(&this->_player1);
+    this->_players.push_back(&this->_player2);
 
     this->_hud = Hud();
     this->_level = Level("map1", Vector2(100,100), graphics);
@@ -64,24 +71,49 @@ void Game::gameLoop(){
         if (input.wasKeyPressed(SDL_SCANCODE_ESCAPE)){
             return;
         }
+
+        //player 1 inputs
         if (! (input.isKeyHeld(SDL_SCANCODE_LEFT) & input.isKeyHeld(SDL_SCANCODE_RIGHT))){
             if(input.isKeyHeld(SDL_SCANCODE_LEFT)){
-                this->_player.moveLeft();
+                this->_player1.moveLeft();
             }
             if(input.isKeyHeld(SDL_SCANCODE_RIGHT)){
-                this->_player.moveRight();
+                this->_player1.moveRight();
             }
         }
         if (input.wasKeyPressed(SDL_SCANCODE_UP)){
-            this->_player.jump();
+            this->_player1.jump();
         }
 
         if(input.wasKeyReleased(SDL_SCANCODE_LEFT)){
-            this->_player.stopMoving();
+            this->_player1.stopMoving();
         }
         if(input.wasKeyReleased(SDL_SCANCODE_RIGHT)){
-            this->_player.stopMoving();
+            this->_player1.stopMoving();
         }
+
+
+        //player 2 inputs
+        if (! (input.isKeyHeld(SDL_SCANCODE_A) & input.isKeyHeld(SDL_SCANCODE_D))){
+            if(input.isKeyHeld(SDL_SCANCODE_A)){
+                this->_player2.moveLeft();
+            }
+            if(input.isKeyHeld(SDL_SCANCODE_D)){
+                this->_player2.moveRight();
+            }
+        }
+        if (input.wasKeyPressed(SDL_SCANCODE_W)){
+            this->_player2.jump();
+        }
+
+        if(input.wasKeyReleased(SDL_SCANCODE_A)){
+            this->_player2.stopMoving();
+        }
+        if(input.wasKeyReleased(SDL_SCANCODE_D)){
+            this->_player2.stopMoving();
+        }
+
+
 
         const int CURRENT_TIME = SDL_GetTicks();
         int ELAPSED_TIME = CURRENT_TIME - LAST_UPDATE_TIME;
@@ -96,20 +128,45 @@ void Game::gameLoop(){
 void Game::draw(Graphics &graphics){
     graphics.clear();
     this->_level.draw(graphics);
-    this->_player.draw(graphics);
-    // this->_hud.draw(graphics, this->_player.get_x(), this->_player.get_y());
-    this->_hud.draw(graphics, _player.getCurrentAnimation());
+    this->_player1.draw(graphics);
+    this->_player2.draw(graphics);
+    // this->_hud.draw(graphics, this->_player1.get_x(), this->_player1.get_y());
+    this->_hud.draw(graphics, _player1.getCurrentAnimation());
     graphics.flip();
 }
 
 void Game::update(float elapsedTime){
-    _player.update(elapsedTime);
+    _player1.update(elapsedTime);
+    _player2.update(elapsedTime);
     _level.update(elapsedTime);
 
     std::vector<Rectangle> otherRectangles;
-    otherRectangles = this->_level.checkTileCollisions(this->_player.getBoundingBox());
+    otherRectangles = this->_level.checkTileCollisions(this->_player1.getBoundingBox());
     if (otherRectangles.size() > 0){
-        this->_player.handleTileCollisions(otherRectangles);
+        this->_player1.handleTileCollisions(otherRectangles);
     }
+    otherRectangles = this->_level.checkTileCollisions(this->_player2.getBoundingBox());
+    if (otherRectangles.size() > 0){
+        this->_player2.handleTileCollisions(otherRectangles);
+    }
+
+
+
+    //checking collisions
+    std::vector<Player*>::iterator iter1;
+    std::vector<Player*>::iterator iter2; 
+
+    for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
+        for (iter2 = this->_players.begin(); iter2 != this->_players.end(); iter2++){
+            if (iter1 != iter2){
+                if((*iter1)->getBoundingBox().collidesWith((*iter2)->getBoundingBox())){
+                    Rectangle other = (*iter2)->getBoundingBox();
+                    (*iter1)->handlePlayerCollisions(other);
+                }
+            }
+        }
+    }
+
+
     SDL_Delay(globals::MAX_FRAME_TIME - elapsedTime);
 }
