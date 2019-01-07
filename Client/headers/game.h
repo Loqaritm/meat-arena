@@ -19,6 +19,7 @@ private:
 
     Player _player1;
     Player _player2;
+    Player _player3;
     std::vector <Player*> _players;
     Hud _hud;
     Level _level;
