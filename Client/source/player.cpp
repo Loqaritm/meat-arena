@@ -103,9 +103,9 @@ void Player::handlePlayerCollisions(Rectangle &other){
     if(collisionSide != sides::NONE){
         switch(collisionSide){
         case sides::TOP:
-            //respawn here
-            this->_x= 100;
-            this->_y = 100;
+            this->_dead = true;
+            // this->_x= 100;
+            // this->_y = 100;
             break;
         case sides::BOTTOM:
             //add points here
@@ -175,3 +175,15 @@ void Player::draw(Graphics &graphics){
     AnimatedSprite::draw(graphics, this->_x, this->_y);
 }
 
+bool Player::isDead(){
+    return this->_dead;
+}
+
+void Player::respawn(std::vector<Vector2> respawnPoints){
+    int numberOfRespawnPoints = respawnPoints.size();
+    int i = std::rand() % numberOfRespawnPoints;
+    Vector2 playerPosAfterRespawn = respawnPoints.at(i);
+    this->_x = playerPosAfterRespawn.x;
+    this->_y = playerPosAfterRespawn.y;
+    this->_dead = false;
+}

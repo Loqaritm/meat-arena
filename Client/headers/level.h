@@ -21,7 +21,7 @@ public:
     void draw(Graphics &graphics);
 
     std::vector<Rectangle> checkTileCollisions(const Rectangle &other);
-
+    std::vector<Vector2> getRespawnPoints();
 
 private:
 std::string _mapName;
@@ -32,6 +32,7 @@ SDL_Texture* _backgroundTexture;
 std::vector<Tile> _tileList;
 std::vector<Tileset> _tileSets;
 std::vector<Rectangle> _collisionRectangles;
+std::vector<Vector2> _respawnPoints;
 
 void loadMap(std::string mapName, Graphics &graphics);
 };

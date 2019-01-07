@@ -14,6 +14,7 @@
 Game::Game(){
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
+    std::srand(SDL_GetTicks());
     this->gameLoop();
 }
 
@@ -193,6 +194,12 @@ void Game::update(float elapsedTime){
                     (*iter1)->handlePlayerCollisions(other);
                 }
             }
+        }
+    }
+
+    for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
+        if((*iter1)->isDead()){
+            (*iter1)->respawn(this->_level.getRespawnPoints());
         }
     }
 

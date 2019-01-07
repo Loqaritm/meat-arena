@@ -37,11 +37,15 @@ public:
     void handleTileCollisions(std::vector<Rectangle> &others);
     void handlePlayerCollisions(Rectangle &other);
 
+    bool isDead();
+    void respawn(std::vector<Vector2> respawnPoints);
+
 private:
     float _dx, _dy, _velocityY;
     float _jumping_height_now;
     bool _readyToJump;
     bool _jumping;
+    bool _dead;
     Direction _facing;
 };
 

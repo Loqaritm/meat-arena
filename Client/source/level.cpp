@@ -150,10 +150,28 @@ void Level::loadMap(std::string mapName, Graphics &graphics){
                     }
                 }
             }
+            else if(ss.str() == "respawnPoints"){
+                XMLElement* pObject = pObjectGroup->FirstChildElement("object");
+                if(pObject!=NULL){
+                    while(pObject){
+                        float x, y;
+                        x = pObject->FloatAttribute("x");
+                        y = pObject->FloatAttribute("y");
+                        this->_respawnPoints.push_back(Vector2(std::floor(x) * globals::SPRITE_SCALE,
+                            std::floor(y) * globals::SPRITE_SCALE));
+                        //maybe there should also be *SPRITE_SCALE
+                        pObject = pObject->NextSiblingElement("object");
+                    }
+                }
+            }
             // else other groups
             pObjectGroup = pObjectGroup->NextSiblingElement("objectgroup");
         }
     }
+}
+
+std::vector<Vector2> Level::getRespawnPoints(){
+    return this->_respawnPoints;
 }
 
 void Level::update(float elapsedTime){}
