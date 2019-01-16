@@ -1,5 +1,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
+#include <string>;
 
 namespace globals{
     const int SCREEN_WIDTH = 640;
@@ -9,6 +10,9 @@ namespace globals{
 
     const int FPS = 60;
     const int MAX_FRAME_TIME = 1000/60;
+
+    const std::string SERVER_IP = "localhost";
+    const std::string SERVER_PORT = "4200";
 }
 namespace sides{
     enum Side {

@@ -12,11 +12,12 @@ namespace player_constants {
 Player::Player(){}
 
 Player::Player(Graphics &graphics, const std::string &filepath, int sourceX, int sourceY, int width, int height,
-            float posX, float posY) :
+            float posX, float posY, int player_fd) :
     AnimatedSprite(graphics, filepath, 0,0,16,16, posX,posY, globals::MAX_FRAME_TIME*10),
     _readyToJump(false),
     _jumping(true),
-    _jumping_height_now(0.0f)
+    _jumping_height_now(0.0f),
+    _player_fd(player_fd)
     {
         graphics.loadImage(filepath);
         this->setupAnimations();
@@ -186,4 +187,17 @@ void Player::respawn(std::vector<Vector2> respawnPoints){
     this->_x = playerPosAfterRespawn.x;
     this->_y = playerPosAfterRespawn.y;
     this->_dead = false;
+}
+
+int Player::get_player_fd(){
+    return this->_player_fd;
+}
+
+void Player::set_player_fd(int fd){
+    this->_player_fd = fd;
+}
+
+void Player::set_position(Vector2 position){
+    this->_x = position.x;
+    this->_y = position.y;
 }

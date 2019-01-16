@@ -10,7 +10,7 @@ class Player : public AnimatedSprite{
 public:
     Player();
     Player(Graphics &graphics, const std::string &filepath, int sourceX, int sourceY, int width, int height,
-            float posX, float posY);
+            float posX, float posY, int player_fd = 0);
     void draw(Graphics &graphics);
     void update(float elapsedTime);
 
@@ -40,6 +40,10 @@ public:
     bool isDead();
     void respawn(std::vector<Vector2> respawnPoints);
 
+    int get_player_fd();
+    void set_player_fd(int fd);
+    void set_position(Vector2 position);
+
 private:
     float _dx, _dy, _velocityY;
     float _jumping_height_now;
@@ -47,6 +51,7 @@ private:
     bool _jumping;
     bool _dead;
     Direction _facing;
+    int _player_fd;
 };
 
 #endif

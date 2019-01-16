@@ -3,6 +3,10 @@
 #include <graphics.h>
 #include <input.h>
 #include <globals.h>
+#include <network.h>
+#include <thread>
+
+
 /** Game class
  *  Main game loop
  * 
@@ -27,12 +31,25 @@ void Game::gameLoop(){
     Input input;
     SDL_Event event;
 
-
     // just a test to show that you cen get screen size TODO: using it to scale the graphics
     int width, height;
     graphics.getWindowSize(width, height);
     printf(std::to_string(width).c_str());
     printf(std::to_string(height).c_str());
+
+    // network part
+    Network network;
+    int sockfd;
+    if (sockfd = network.connect_to_server(*this)){
+        printf("connected to server \n");
+    }
+    else printf("something went wrong (from game class) \n");
+    network.get_game_state(*this, sockfd);
+    network.set_socket_nonblocking(sockfd);
+
+    // this->network_update(network, sockfd);
+    // std::thread t1(network_update, network, sockfd);
+    // std::thread t1(&Game::network_update, this, network, sockfd);
 
     // this->_player1 = Player(graphics, "Client/Content/Sprites/MyChar.png", 0, 0, 16, 16, 100, 100);
     this->_player1 = Player(graphics, "Client/Content/Sprites/meat.png", 0, 0, 16, 16, 100, 100);
@@ -56,8 +73,9 @@ void Game::gameLoop(){
     this->_level = Level("map1", Vector2(100,100), graphics);
 
     int LAST_UPDATE_TIME=SDL_GetTicks();
+    int LAST_WRITE_TIME=SDL_GetTicks();
 
-
+    
     //main loop
     while(true){
         input.beginNewFrame();
@@ -161,7 +179,7 @@ void Game::gameLoop(){
             this->_player4.stopMoving();
         }
 
-
+        this->network_update(network, sockfd);
 
         const int CURRENT_TIME = SDL_GetTicks();
         int ELAPSED_TIME = CURRENT_TIME - LAST_UPDATE_TIME;
@@ -169,27 +187,71 @@ void Game::gameLoop(){
         LAST_UPDATE_TIME = CURRENT_TIME;
 
         this->draw(graphics);
-
+        if(CURRENT_TIME - LAST_WRITE_TIME > globals::MAX_FRAME_TIME){
+            network.send_game_state(*this, sockfd);
+            LAST_WRITE_TIME = CURRENT_TIME;
+        }
     }
+}
+
+void Game::network_update(Network &network, int sockfd){
+    network.get_game_state(*this, sockfd);
+
+    int i = 0;
+    std::vector<Player*>::iterator iter1;
+    for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
+        if(i != my_number){
+            (*iter1)->set_position(this->player_positions[i]);
+        }
+        (*iter1)->set_player_fd(this->player_fds[i]);
+        i++;
+    }
+
 }
 
 void Game::draw(Graphics &graphics){
     graphics.clear();
     this->_level.draw(graphics);
-    this->_player1.draw(graphics);
-    this->_player2.draw(graphics);
-    this->_player3.draw(graphics);
-    this->_player4.draw(graphics);
+    std::vector<Player*>::iterator iter1;
+    for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
+        if((*iter1)->get_player_fd() != 0){
+            (*iter1)->draw(graphics);
+            // printf("%d\n",(*iter1)->get_player_fd());
+        }
+    }
+    // this->_player1.draw(graphics);
+    // this->_player2.draw(graphics);
+    // this->_player3.draw(graphics);
+    // this->_player4.draw(graphics);
     // this->_hud.draw(graphics, this->_player1.get_x(), this->_player1.get_y());
     this->_hud.draw(graphics, _player1.getCurrentAnimation());
     graphics.flip();
 }
 
 void Game::update(float elapsedTime){
-    _player1.update(elapsedTime);
-    _player2.update(elapsedTime);
-    _player3.update(elapsedTime);
-    _player4.update(elapsedTime);
+    std::vector<Player*>::iterator iter1;
+    std::vector<Player*>::iterator iter2;
+
+    // _player1.update(elapsedTime);
+    // _player2.update(elapsedTime);
+    // _player3.update(elapsedTime);
+    // _player4.update(elapsedTime);
+
+    // int i = 0;
+    // for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
+    //     if(i == this->my_number){
+    //         (*iter1)->update(elapsedTime);
+    //         this->player_positions[this->my_number].x = (int)((*iter1)->get_x());
+    //         this->player_positions[this->my_number].y = (int)((*iter1)->get_y());
+    //     }
+    //     i++;
+    // }
+
+    this->_players.at(this->my_number)->update(elapsedTime);
+    this->player_positions[this->my_number].x = (int)(this->_players.at(this->my_number)->get_x());
+    this->player_positions[this->my_number].y = (int)(this->_players.at(this->my_number)->get_y());
+
+
     _level.update(elapsedTime);
 
     std::vector<Rectangle> otherRectangles;
@@ -214,9 +276,6 @@ void Game::update(float elapsedTime){
 
 
     //checking collisions
-    std::vector<Player*>::iterator iter1;
-    std::vector<Player*>::iterator iter2; 
-
     for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
         for (iter2 = this->_players.begin(); iter2 != this->_players.end(); iter2++){
             if (iter1 != iter2){
@@ -235,5 +294,5 @@ void Game::update(float elapsedTime){
     }
 
 
-    SDL_Delay(globals::MAX_FRAME_TIME - elapsedTime);
+    // SDL_Delay(globals::MAX_FRAME_TIME - elapsedTime);
 }
