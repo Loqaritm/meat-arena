@@ -27,15 +27,20 @@ void Hud::drawAt(Graphics &graphics, std::string text, int x, int y){
 }
 
 void Hud::drawPoints(Graphics &graphics, int player_points[]){
-    this->drawAt(graphics, "Meaty", 646, 60);
+    this->color = {242, 6, 6, 0};
+    this->drawAt(graphics, "Meaty", 654, 60);
     this->drawAt(graphics, std::to_string(player_points[0]), 690, 90);
 
-    this->drawAt(graphics, "Trigg", 646, 150);
+
+    this->color = {27, 246, 8, 0};
+    this->drawAt(graphics, "Trigg", 654, 150);
     this->drawAt(graphics, std::to_string(player_points[1]), 690, 180);
 
-    this->drawAt(graphics, "Pip", 646, 240);
+    this->color = {242, 212, 13, 0};
+    this->drawAt(graphics, "Pip", 654, 240);
     this->drawAt(graphics, std::to_string(player_points[2]), 690, 270);
 
-    this->drawAt(graphics, "Neko", 646, 330);
+    this->color = {18, 24, 241, 0};
+    this->drawAt(graphics, "Neko", 654, 330);
     this->drawAt(graphics, std::to_string(player_points[3]), 690, 360);
 }

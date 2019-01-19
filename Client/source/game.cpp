@@ -305,5 +305,5 @@ void Game::update(float elapsedTime){
     }
 
 
-    // SDL_Delay(globals::MAX_FRAME_TIME - elapsedTime);
+    SDL_Delay((globals::MAX_FRAME_TIME - elapsedTime)/4);
 }
