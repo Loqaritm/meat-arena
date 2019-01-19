@@ -11,7 +11,7 @@
 
 Network::Network(){
     std::ifstream dane;
-    dane.open("Client/Content/Config/config.txt");
+    dane.open("Client/Config/config.txt");
     std::string line;
     std::getline(dane, line);
     this->ip = line;
