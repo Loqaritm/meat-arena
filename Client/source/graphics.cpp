@@ -8,7 +8,7 @@
 
 Graphics::Graphics(){
     SDL_CreateWindowAndRenderer(globals::SCREEN_WIDTH,globals::SCREEN_HEIGHT,0,&this->_window, &this->_renderer);
-    SDL_SetWindowTitle(this->_window, "test");
+    SDL_SetWindowTitle(this->_window, "Meat Arena");
 }
 
 Graphics::~Graphics(){
