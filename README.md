@@ -16,12 +16,19 @@ Clone the repository:
 ```
 git clone https://github.com/Loqaritm/meat-arena.git
 ```
-Navigate to the newly created folder and run the program:
+**Local:** If you want to play locally (wsad, arrows, ijkl, numpad) skip the next step and don't worry about setting up ip and port.
+
+**Network:**
+Pull the correct branch:
 ```
 cd meat-arena
+git pull origin network
+```
+Run the program:
+```
 ./client.exe
 ```
-**Important!** Before starting the program, navigate to Client/Config/ and open config.txt.
+**Important for network version!** Before starting the program, navigate to Client/Config/ and open config.txt.
 Be sure to put the proper ip address and port of the server into the file (each on different line).
 
 # Examples
