@@ -8,8 +8,8 @@
 class Hud : public Sprite{
 public:
     Hud();
-    void draw(Graphics &graphics, float x, float y);
-    void draw(Graphics &graphics, std::string animationName);
+    void drawAt(Graphics &graphics, std::string text, int x, int y);
+    void drawPoints(Graphics &graphics, int player_points[]);
 private:
     TTF_Font* sans;
     SDL_Color color;

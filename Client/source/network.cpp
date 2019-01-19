@@ -110,12 +110,17 @@ void intToStr(int num, std::stringstream& ss){
     ss<<num;
 }
 
-int Network::send_game_state(Game &game, int sockfd){
+int Network::send_game_state(Game &game, int sockfd, int killfd){
     std::stringstream ss;
     ss << time(NULL);
     intToStr((int)game.player_positions[game.my_number].x, ss);
     intToStr((int)game.player_positions[game.my_number].y, ss); 
-    ss << "00";
+    if (killfd == 0){
+        ss << "00";
+    }
+    else{
+        ss << killfd;
+    }
     printf(ss.str().c_str());
     printf("\n");
     write(sockfd, ss.str().c_str(), strlen(ss.str().c_str()));

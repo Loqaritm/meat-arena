@@ -99,7 +99,8 @@ void Player::handleTileCollisions(std::vector<Rectangle> &others){
     }
 }
 
-void Player::handlePlayerCollisions(Rectangle &other){
+void Player::handlePlayerCollisions(Player &otherPlayer){
+    Rectangle other = otherPlayer.getBoundingBox();
     sides::Side collisionSide = this->getCollisionSide(other);
     if(collisionSide != sides::NONE){
         switch(collisionSide){
@@ -109,7 +110,7 @@ void Player::handlePlayerCollisions(Rectangle &other){
             // this->_y = 100;
             break;
         case sides::BOTTOM:
-            //add points here
+            this->_kill_fd= otherPlayer.get_player_fd();
             break;
 
         //te dwie rzeczy sprawiaja ze sie przepychaja bo koliduja ze soba no nie
@@ -172,12 +173,33 @@ void Player::update(float elapsedTime){
     AnimatedSprite::update(elapsedTime);
 }
 
+void Player::update_bounding_box(){
+    Sprite::update();
+}
+
 void Player::draw(Graphics &graphics){
     AnimatedSprite::draw(graphics, this->_x, this->_y);
 }
 
 bool Player::isDead(){
     return this->_dead;
+}
+
+int Player::killedWho(){
+    int CURRENT_TIME = SDL_GetTicks();
+    
+
+    if(this->_kill_fd != this->_last_kill_fd && CURRENT_TIME - this->LAST_KILL_TIME > globals::MAX_FRAME_TIME * 20){
+        this->LAST_KILL_TIME = CURRENT_TIME;
+        this->_last_kill_fd = this->_kill_fd;
+        int temp = this->_kill_fd;
+        this->_kill_fd = 0;
+        return temp;
+    }
+    else{
+        this->_kill_fd = 0;
+        return 0;
+    }
 }
 
 void Player::respawn(std::vector<Vector2> respawnPoints){

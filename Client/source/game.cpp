@@ -5,6 +5,7 @@
 #include <globals.h>
 #include <network.h>
 #include <thread>
+#include <sstream>
 
 
 /** Game class
@@ -101,24 +102,29 @@ void Game::gameLoop(){
         //player 1 inputs
         if (! (input.isKeyHeld(SDL_SCANCODE_LEFT) & input.isKeyHeld(SDL_SCANCODE_RIGHT))){
             if(input.isKeyHeld(SDL_SCANCODE_LEFT)){
-                this->_player1.moveLeft();
+                // this->_player1.moveLeft();
+                this->_players.at(this->my_number)->moveLeft();
             }
             if(input.isKeyHeld(SDL_SCANCODE_RIGHT)){
-                this->_player1.moveRight();
+                // this->_player1.moveRight();
+                this->_players.at(this->my_number)->moveRight();
             }
         }
         if (input.wasKeyPressed(SDL_SCANCODE_UP)){
-            this->_player1.jump();
+            // this->_player1.jump();
+            this->_players.at(this->my_number)->jump();
         }
 
         if(input.wasKeyReleased(SDL_SCANCODE_LEFT)){
-            this->_player1.stopMoving();
+            // this->_player1.stopMoving();
+            this->_players.at(this->my_number)->stopMoving();
         }
         if(input.wasKeyReleased(SDL_SCANCODE_RIGHT)){
-            this->_player1.stopMoving();
+            // this->_player1.stopMoving();
+            this->_players.at(this->my_number)->stopMoving();
         }
 
-
+        /*
         //player 2 inputs
         if (! (input.isKeyHeld(SDL_SCANCODE_A) & input.isKeyHeld(SDL_SCANCODE_D))){
             if(input.isKeyHeld(SDL_SCANCODE_A)){
@@ -178,6 +184,7 @@ void Game::gameLoop(){
         if(input.wasKeyReleased(SDL_SCANCODE_KP_6)){
             this->_player4.stopMoving();
         }
+        */
 
         this->network_update(network, sockfd);
 
@@ -188,7 +195,8 @@ void Game::gameLoop(){
 
         this->draw(graphics);
         if(CURRENT_TIME - LAST_WRITE_TIME > globals::MAX_FRAME_TIME){
-            network.send_game_state(*this, sockfd);
+            int kill_fd = this->_players.at(this->my_number)->killedWho();
+            network.send_game_state(*this, sockfd, kill_fd);
             LAST_WRITE_TIME = CURRENT_TIME;
         }
     }
@@ -219,12 +227,8 @@ void Game::draw(Graphics &graphics){
             // printf("%d\n",(*iter1)->get_player_fd());
         }
     }
-    // this->_player1.draw(graphics);
-    // this->_player2.draw(graphics);
-    // this->_player3.draw(graphics);
-    // this->_player4.draw(graphics);
-    // this->_hud.draw(graphics, this->_player1.get_x(), this->_player1.get_y());
-    this->_hud.draw(graphics, _player1.getCurrentAnimation());
+
+    this->_hud.drawPoints(graphics, this->player_points);
     graphics.flip();
 }
 
@@ -237,19 +241,22 @@ void Game::update(float elapsedTime){
     // _player3.update(elapsedTime);
     // _player4.update(elapsedTime);
 
-    // int i = 0;
-    // for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
-    //     if(i == this->my_number){
-    //         (*iter1)->update(elapsedTime);
-    //         this->player_positions[this->my_number].x = (int)((*iter1)->get_x());
-    //         this->player_positions[this->my_number].y = (int)((*iter1)->get_y());
-    //     }
-    //     i++;
-    // }
+    int i = 0;
+    for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
+        if(i == this->my_number){
+            (*iter1)->update(elapsedTime);
+            this->player_positions[this->my_number].x = (int)((*iter1)->get_x());
+            this->player_positions[this->my_number].y = (int)((*iter1)->get_y());
+        }
+        else{
+            (*iter1)->update_bounding_box();
+        }
+        i++;
+    }
 
-    this->_players.at(this->my_number)->update(elapsedTime);
-    this->player_positions[this->my_number].x = (int)(this->_players.at(this->my_number)->get_x());
-    this->player_positions[this->my_number].y = (int)(this->_players.at(this->my_number)->get_y());
+    // this->_players.at(this->my_number)->update(elapsedTime);
+    // this->player_positions[this->my_number].x = (int)(this->_players.at(this->my_number)->get_x());
+    // this->player_positions[this->my_number].y = (int)(this->_players.at(this->my_number)->get_y());
 
 
     _level.update(elapsedTime);
@@ -281,16 +288,20 @@ void Game::update(float elapsedTime){
             if (iter1 != iter2){
                 if((*iter1)->getBoundingBox().collidesWith((*iter2)->getBoundingBox())){
                     Rectangle other = (*iter2)->getBoundingBox();
-                    (*iter1)->handlePlayerCollisions(other);
+                    // Player player = **iter2;
+                    (*iter1)->handlePlayerCollisions(**iter2);
                 }
             }
         }
     }
 
-    for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
-        if((*iter1)->isDead()){
-            (*iter1)->respawn(this->_level.getRespawnPoints());
-        }
+    // for (iter1 = this->_players.begin(); iter1 != this->_players.end(); iter1++){
+    //     if((*iter1)->isDead()){
+    //         (*iter1)->respawn(this->_level.getRespawnPoints());
+    //     }
+    // }
+    if (this->_players.at(this->my_number)->isDead()){
+        this->_players.at(this->my_number)->respawn(this->_level.getRespawnPoints());
     }
 
 

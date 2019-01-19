@@ -13,10 +13,12 @@ Hud::Hud(){
 
 }
 
-void Hud::draw(Graphics &graphics, float x, float y){
-    std::string text = "Pos X: " + std::to_string(x) + " Pos Y: "+std::to_string(y);
+void Hud::drawAt(Graphics &graphics, std::string text, int x, int y){
+    // std::string text = "Pos X: " + std::to_string(x) + " Pos Y: "+std::to_string(y);
     SDL_Surface* surfaceMessage = TTF_RenderText_Solid(this->sans, text.c_str(), this->color);
     SDL_Texture* Message = SDL_CreateTextureFromSurface(graphics.getRenderer(), surfaceMessage);
+    this->_sourceRect.x=x;
+    this->_sourceRect.y=y;
     this->_sourceRect.w=surfaceMessage->w;
     this->_sourceRect.h=surfaceMessage->h;
     SDL_FreeSurface(surfaceMessage);
@@ -24,13 +26,16 @@ void Hud::draw(Graphics &graphics, float x, float y){
     SDL_DestroyTexture(Message);
 }
 
-void Hud::draw(Graphics &graphics, std::string currentAnimationName){
-    std::string text = "Current animation: " + currentAnimationName;
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(this->sans, text.c_str(), this->color);
-    SDL_Texture* Message = SDL_CreateTextureFromSurface(graphics.getRenderer(), surfaceMessage);
-    this->_sourceRect.w=surfaceMessage->w;
-    this->_sourceRect.h=surfaceMessage->h;
-    SDL_FreeSurface(surfaceMessage);
-    SDL_RenderCopy(graphics.getRenderer(), Message, NULL, &this->_sourceRect);
-    SDL_DestroyTexture(Message);
+void Hud::drawPoints(Graphics &graphics, int player_points[]){
+    this->drawAt(graphics, "Meaty", 646, 60);
+    this->drawAt(graphics, std::to_string(player_points[0]), 690, 90);
+
+    this->drawAt(graphics, "Trigg", 646, 150);
+    this->drawAt(graphics, std::to_string(player_points[1]), 690, 180);
+
+    this->drawAt(graphics, "Pip", 646, 240);
+    this->drawAt(graphics, std::to_string(player_points[2]), 690, 270);
+
+    this->drawAt(graphics, "Neko", 646, 330);
+    this->drawAt(graphics, std::to_string(player_points[3]), 690, 360);
 }

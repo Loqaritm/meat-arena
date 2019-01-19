@@ -13,6 +13,7 @@ public:
             float posX, float posY, int player_fd = 0);
     void draw(Graphics &graphics);
     void update(float elapsedTime);
+    void update_bounding_box();
 
     // moves the player left by -_dx
     void moveLeft();
@@ -35,9 +36,11 @@ public:
     virtual void setupAnimations();
 
     void handleTileCollisions(std::vector<Rectangle> &others);
-    void handlePlayerCollisions(Rectangle &other);
+    void handlePlayerCollisions(Player &otherPlayer);
 
     bool isDead();
+    int killedWho();
+
     void respawn(std::vector<Vector2> respawnPoints);
 
     int get_player_fd();
@@ -52,6 +55,9 @@ private:
     bool _dead;
     Direction _facing;
     int _player_fd;
+    int LAST_KILL_TIME;
+    int _kill_fd;
+    int _last_kill_fd;
 };
 
 #endif
