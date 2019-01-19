@@ -4,9 +4,6 @@
 
 
 int main(int argc, const char* argv[]){
-    // printf("dupa");
-
     Game game;
-    // printf("dupa");
     return 0;
 }

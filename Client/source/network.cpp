@@ -6,10 +6,18 @@
 #include <unistd.h>
 #include <sstream>
 #include <fcntl.h>
+#include <fstream>
 
 
 Network::Network(){
-
+    std::ifstream dane;
+    dane.open("Client/Content/Config/config.txt");
+    std::string line;
+    std::getline(dane, line);
+    this->ip = line;
+    line = "";
+    std::getline(dane, line);
+    this->port = line;
 }
 
 Network::~Network(){
@@ -25,7 +33,7 @@ int Network::connect_to_server(Game &game){
     hints.ai_family = AF_INET;
     hints.ai_protocol = IPPROTO_TCP;
     addrinfo *resolved;
-    if(int err = getaddrinfo(globals::SERVER_IP.c_str(), globals::SERVER_PORT.c_str(), &hints, &resolved)){
+    if(int err = getaddrinfo(this->ip.c_str(), this->port.c_str(), &hints, &resolved)){
         error(1,0, "Error connecting to server", gai_strerror(err));
         printf("Error connecting to server. \n");
     }
