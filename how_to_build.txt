@@ -1,1 +1,1 @@
-g++ -o client.exe -I ./Client/headers Client/source/*.cpp -lSDL2 -lSDL2_image -lSDL2_ttf
+g++ -o client -I ./Client/headers Client/source/*.cpp -lSDL2 -lSDL2_image -lSDL2_ttf
