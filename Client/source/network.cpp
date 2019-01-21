@@ -127,6 +127,7 @@ int Network::send_game_state(Game &game, int sockfd, int killfd){
         ss << "00";
     }
     else{
+        if(killfd < 10) ss<<0;
         ss << killfd;
     }
     printf(ss.str().c_str());
